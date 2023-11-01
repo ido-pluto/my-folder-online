@@ -56,6 +56,10 @@ export default class RemoteDirectory {
             });
         });
 
+        this.peerEvents.once('connect', () => {
+            serverWS.close();
+        });
+
         this.peerEvents.signal(JSON.parse(remoteSignal.connectInfo));
         this._peer = new PeerRequest(this.peerEvents);
         await this._peer.connect();
