@@ -26,7 +26,7 @@ export default function GroupShare() {
         setFilesCollections.remove(index);
     }
 
-    return <Box p={10} m={5} width={800} maxWidth='100%' borderLeft="1px" mx={"auto"} borderRight="1px" borderColor="var(--chakra-colors-chakra-border-color)">
+    return <Box p={10} m={5} width="50%" minWidth={400} maxWidth="100%" borderLeft="1px" borderRight="1px" borderColor="var(--chakra-colors-chakra-border-color)">
         <Input type="file" ref={inputRef} onChange={newShare} multiple display="none"/>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
             <Heading>My shares</Heading>
