@@ -16,7 +16,7 @@ export default function GroupShare() {
 
     const newShare = (event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
-        if(!files) return;
+        if (!files?.length) return;
 
         setFilesCollections.push([...files]);
     }
