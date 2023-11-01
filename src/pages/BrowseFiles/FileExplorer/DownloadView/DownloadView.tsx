@@ -1,10 +1,18 @@
 import RemoteDownloadManager from '../../../../core/remote-download-manager.ts';
-import {Box, Heading, useToast} from '@chakra-ui/react';
+import {Box, Heading, Show, useToast} from '@chakra-ui/react';
 import DownloadProgress from './DownloadProgress.tsx';
 import {useEffect} from 'react';
 import {useForceUpdate} from 'framer-motion';
 
+const BASE_DOWNLOAD_VIEW_BOX_PROPS: Parameters<typeof Box>[0] = {
+    border: '1px',
+    borderColor: 'var(--chakra-colors-chakra-border-color)',
+    p: 2,
+    position: 'absolute'
+};
+
 export type DownloadViewProps = { downloadManager: RemoteDownloadManager };
+
 export default function DownloadView({downloadManager}: DownloadViewProps) {
     const [update] = useForceUpdate();
     const toast = useToast();
@@ -21,11 +29,24 @@ export default function DownloadView({downloadManager}: DownloadViewProps) {
         });
     }, [downloadManager, toast, update]);
 
-    return downloadManager.activeDownloads.length ?
-        <Box border="1px" width={530} borderColor="var(--chakra-colors-chakra-border-color)" p={2} position="absolute" left={10} bottom={10}>
-            <Heading size="sm">Downloads:</Heading>
-            {downloadManager.activeDownloads.map(download =>
-                <DownloadProgress key={download.item.path} remoteDownload={download}/>
-            )}
-        </Box> : null;
+    const Downloads = <>
+        <Heading size="sm">Downloads:</Heading>
+        {downloadManager.activeDownloads.map(download =>
+            <DownloadProgress key={download.item.path} remoteDownload={download}/>
+        )}
+    </>;
+
+    return downloadManager.activeDownloads.length ? <>
+            <Show above="md">
+                <Box width={530} left={10} bottom={10} {...BASE_DOWNLOAD_VIEW_BOX_PROPS}>
+                    {Downloads}
+                </Box>
+            </Show>
+            <Show below="md">
+                <Box width="100%" bottom={0} {...BASE_DOWNLOAD_VIEW_BOX_PROPS}>
+                    {Downloads}
+                </Box>
+            </Show>
+        </>
+        : null;
 }

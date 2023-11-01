@@ -1,18 +1,15 @@
-
-import {
-    createBrowserRouter,
-} from "react-router-dom";
+import {createBrowserRouter,} from 'react-router-dom';
 import HomePage from '../pages/HomePage/HomePage.tsx';
 import BrowseFiles from '../pages/BrowseFiles/BrowseFiles.tsx';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <HomePage />,
+        element: <HomePage/>,
     },
     {
         path: '/browse-files/:password?/*',
-        element: <BrowseFiles />,
+        element: <BrowseFiles/>,
     },
 ]);
 

@@ -66,6 +66,6 @@ export default class RemoteDownload {
     }
 
     private _onStreamEventBunch(transferred: number) {
-        this.streamSignal.emit('progress', transferred, this.item.size);
+        this.streamSignal.emit('progress', [transferred, this.item.size]);
     }
 }

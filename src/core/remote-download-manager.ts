@@ -6,17 +6,17 @@ import RemoteFileDownload from './share/remote-download/remote-file-download.ts'
 import VirtualDirectory from './share/virtual-fs/virtual-directory.ts';
 import VirtualFile from './share/virtual-fs/virtual-file.ts';
 import StreamSignals from './share/remote-download/stream-signals.ts';
-import {EventEmitter} from 'tseep';
+import Emittery from 'emittery';
 
 type StreamSignalsEvents = {
-    change: () => void;
-    downloadedFinished: (download: RemoteDownload) => void;
+    change: any;
+    downloadedFinished: RemoteDownload;
 }
 
 const EMMIT_CHANGE = ['progress', 'pause', 'resume', 'abort', 'end'] as const;
 const EMMIT_CLOSE = ['abort', 'end'] as const;
 
-export default class RemoteDownloadManager extends EventEmitter<StreamSignalsEvents> {
+export default class RemoteDownloadManager extends Emittery<StreamSignalsEvents> {
     activeDownloads: RemoteDownload[] = [];
 
     public constructor(private _remote: RemoteDirectory) {
@@ -76,8 +76,9 @@ export default class RemoteDownloadManager extends EventEmitter<StreamSignalsEve
 
     private _addEvents(signals: StreamSignals, download: RemoteDownload) {
         const emitChange = () => this.emit('change');
-        const onEnd = () =>
+        const onEnd = () => {
             this.activeDownloads = this.activeDownloads.filter(d => d !== download);
+        }
 
         for(const signal of EMMIT_CHANGE){
             signals.on(signal, emitChange);

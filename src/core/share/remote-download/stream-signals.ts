@@ -1,19 +1,18 @@
-import {EventEmitter} from 'tseep';
 import {MessageType} from '../../peer-to-peer/types.ts';
+import Emittery from 'emittery';
 
-export type StreamProgressEvent = (bytes: number, totalBytes: number) => void;
 
 type StreamSignalsEvents = {
-    progress: StreamProgressEvent;
-    abort: () => void;
-    pause: () => void;
-    resume: () => void;
-    end: () => void;
-    downloadSuccessful: () => void;
+    progress: [bytes: number, totalBytes: number];
+    abort: any;
+    pause: any;
+    resume: any;
+    end: any;
+    downloadSuccessful: any
 
 }
 
-export default class StreamSignals extends EventEmitter<StreamSignalsEvents> {
+export default class StreamSignals extends Emittery<StreamSignalsEvents> {
 
     addEvents(requestId: string, sendJSON: (data: any) => void) {
         const sendMessage = (type: MessageType) => sendJSON({type, requestId});

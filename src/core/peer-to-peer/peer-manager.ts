@@ -33,10 +33,10 @@ export default class PeerManager {
 
     private _createNewPeer(): Promise<NewPeerResponse> {
         const peerId = uuid();
-        const peer = new (window as any).SimplePeer({
+        const peer = new SimplePeer({
             initiator: true,
             trickle: false
-        }) as SimplePeer.Instance;
+        })
 
         this._peers[peerId] = peer;
         this._initPeerMethods(peer, peerId);

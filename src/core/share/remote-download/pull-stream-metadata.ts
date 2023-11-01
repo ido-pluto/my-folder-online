@@ -11,6 +11,8 @@ export default class PullStreamMetadata extends IStreamProgress {
     }
 
     async progress(callback: (progressBytes: number, totalBytes: number) => void) {
-        this._streamSignals.on('progress', callback);
+        this._streamSignals.on('progress',
+            ([bytes, totalBytes]) => callback(bytes, totalBytes)
+        );
     }
 }
