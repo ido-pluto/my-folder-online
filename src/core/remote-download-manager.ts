@@ -30,7 +30,6 @@ export default class RemoteDownloadManager extends EventEmitter<StreamSignalsEve
 
         const signals = new StreamSignals();
         const download = new RemoteFileDownload(this._remote, file, signals);
-        await download.init();
         this.activeDownloads.push(download);
 
         this._addEvents(signals, download);
@@ -44,7 +43,6 @@ export default class RemoteDownloadManager extends EventEmitter<StreamSignalsEve
 
         const signals = new StreamSignals();
         const download = new RemoteDirectoryDownload(this._remote, directory, signals);
-        await download.init();
         this.activeDownloads.push(download);
 
         this._addEvents(signals, download);

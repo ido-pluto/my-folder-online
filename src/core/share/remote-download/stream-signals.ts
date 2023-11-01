@@ -1,8 +1,10 @@
 import {EventEmitter} from 'tseep';
 import {MessageType} from '../../peer-to-peer/types.ts';
 
+export type StreamProgressEvent = (bytes: number, totalBytes: number) => void;
+
 type StreamSignalsEvents = {
-    progress: (bytes: number, totalBytes: number) => void;
+    progress: StreamProgressEvent;
     abort: () => void;
     pause: () => void;
     resume: () => void;

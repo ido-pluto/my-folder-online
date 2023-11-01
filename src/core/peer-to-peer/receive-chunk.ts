@@ -1,5 +1,8 @@
 import {CallbackChunk} from './peer-request.ts';
 
+/**
+ * Make sure that chunks are received in order
+ */
 export default class ReceiveChunk {
     private _checkHold: {[key: number]: any} = {};
     private _totalChunks = 1;
