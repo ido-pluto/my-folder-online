@@ -1,5 +1,5 @@
 import VirtualDirectory from '../../../core/share/virtual-fs/virtual-directory.ts';
-import {Box, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useColorMode} from '@chakra-ui/react';
+import {Box, Checkbox, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useColorMode} from '@chakra-ui/react';
 import {FcOpenedFolder} from 'react-icons/fc';
 import theme from '../../../config/theme.ts';
 import VirtualItem from '../../../core/share/virtual-fs/virtual-item.ts';
@@ -43,6 +43,7 @@ export default function ViewTable({directory, elementProps, selection}: ViewTabl
                 <Table variant="simple">
                     <Thead>
                         <Tr>
+                            <Th>Selected</Th>
                             <Th>Name</Th>
                             <Th>Size</Th>
                             <Th>Type</Th>
@@ -57,6 +58,9 @@ export default function ViewTable({directory, elementProps, selection}: ViewTabl
                                 onDoubleClick={() => elementProps.onDoubleClick?.(child)}
                                 backgroundColor={backGroundSelection(child.path)}
                             >
+                                <Td>
+                                    <Checkbox isChecked={selection.includes(child.path)}/>
+                                </Td>
                                 <Td>{child.name}</Td>
                                 <Td>{prettyBytes(child.size)}</Td>
                                 <Td>{child instanceof VirtualDirectory ? <FolderIcon/> : child.type}</Td>
@@ -66,7 +70,7 @@ export default function ViewTable({directory, elementProps, selection}: ViewTabl
                     </Tbody>
                 </Table>
             </TableContainer>
-        </InfiniteScroll>:
+        </InfiniteScroll> :
         <Box p={5} m="auto">Empty directory</Box>;
 }
 
