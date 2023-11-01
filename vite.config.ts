@@ -1,25 +1,24 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-import {nodePolyfills} from 'vite-plugin-node-polyfills';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import {VitePWA} from 'vite-plugin-pwa';
 import {pwaOptions} from './src/config/pwa.js';
 
 const PACKAGE_INTO_CHUNKS = {
-    'react-router': ['react', 'react-dom', 'react-router-dom', '@remix-run'],
-    'crypto': ['hash.js', 'public-encrypt'],
-    'polyfill': ['buffer-polyfill', 'bson', 'events', 'util'],
+    'react': ['@remix-run', 'react-dom', 'react-router-dom'],
+    'framer-motion': ['framer-motion'],
+    'simple-peer': ['simple-peer', 'bson', 'lodash'],
+    'styled-system': ['styled-system', '@emotion', 'Core', 'theme-options.ts'],
 };
 
 export default defineConfig({
-    plugins: [nodePolyfills(), react(), topLevelAwait(), VitePWA(pwaOptions)],
+    plugins: [topLevelAwait(), react(), VitePWA(pwaOptions)],
     resolve: {
         alias: {
-            'readable-stream': 'vite-compatible-readable-stream'
+            'simple-peer': 'simple-peer/simplepeer.min.js',
         },
     },
     build: {
-        modulePreload: false,
         minify: true,
         rollupOptions: {
             output: {
@@ -32,5 +31,5 @@ export default defineConfig({
                 },
             },
         }
-    }
+    },
 });

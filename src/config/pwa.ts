@@ -4,6 +4,26 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     includeAssets: ['logo.svg', 'pwa.svg', 'pwa.png'],
     strategies: 'generateSW',
     registerType: 'prompt',
+    injectRegister: 'auto',
+    workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        globPatterns: [
+            '**/*.{js,css,html,png,svg}',
+        ],
+        runtimeCaching: [
+            {
+                urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+                handler: 'CacheFirst',
+                options: {
+                    cacheName: 'images',
+                    expiration: {
+                        maxEntries: 10,
+                    }
+                }
+            }
+        ]
+    },
     manifest: {
         name: 'My folder online',
         short_name: 'Share folder',

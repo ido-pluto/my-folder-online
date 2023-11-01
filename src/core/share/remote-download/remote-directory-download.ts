@@ -2,6 +2,9 @@ import type RemoteDirectory from '../remote-directory.ts';
 import VirtualDirectory from '../virtual-fs/virtual-directory.ts';
 import RemoteDownload from './remote-download.ts';
 import StreamSignals from './stream-signals.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {showDirectoryPicker} from 'native-file-system-adapter';
 
 export default class RemoteDirectoryDownload extends RemoteDownload {
     public constructor(private _remote: RemoteDirectory, private _directory: VirtualDirectory, signal?: StreamSignals) {
@@ -12,7 +15,7 @@ export default class RemoteDirectoryDownload extends RemoteDownload {
         try {
             const directoryHandle = await showDirectoryPicker({
                 mode: 'readwrite'
-            });
+            }) as FileSystemDirectoryHandle;
 
             super.download();
             await this._downloadNestedDirectory(this._directory, directoryHandle);
