@@ -1,4 +1,4 @@
-name: Release
+name: Build
 on:
   workflow_dispatch:
   push:
@@ -8,8 +8,8 @@ on:
       - '*'
 
 jobs:
-  test:
-    name: Test
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     concurrency: release-${{ github.ref }}
@@ -28,6 +28,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Lint
+        run: npm run lint
 
       - name: Build
         run: npm run build
