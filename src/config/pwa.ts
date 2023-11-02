@@ -1,4 +1,6 @@
-import {VitePWAOptions} from 'vite-plugin-pwa';
+import {ManifestOptions, VitePWAOptions} from 'vite-plugin-pwa';
+import {Preset} from '@vite-pwa/assets-generator/config';
+import {DeepPartial} from '@chakra-ui/react';
 
 export const pwaOptions: Partial<VitePWAOptions> = {
     includeAssets: ['logo.svg', 'pwa.svg', 'pwa.png'],
@@ -68,5 +70,21 @@ export const pwaOptions: Partial<VitePWAOptions> = {
                 purpose: 'maskable'
             }
         ]
+    }
+};
+
+const manifest = pwaOptions.manifest as ManifestOptions;
+
+
+export const preset: DeepPartial<Preset> = {
+    maskable: {
+        resizeOptions: {
+            background: manifest.background_color
+        }
+    },
+    apple: {
+        resizeOptions: {
+            background: manifest.background_color
+        }
     }
 };

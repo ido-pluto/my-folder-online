@@ -1,7 +1,9 @@
-import {defineConfig, minimalPreset as preset} from '@vite-pwa/assets-generator/config';
+import {defineConfig, minimalPreset} from '@vite-pwa/assets-generator/config';
+import _ from 'lodash';
+import {preset} from './src/config/pwa.js';
 
 export default defineConfig({
-    preset,
+    preset: _.merge(preset, minimalPreset),
     images: [
         'public/pwa.svg'
     ]
