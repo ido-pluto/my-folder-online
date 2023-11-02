@@ -18,7 +18,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
                 options: {
                     cacheName: 'images',
                     expiration: {
-                        maxEntries: 10,
+                        maxEntries: 1,
                     }
                 }
             }
@@ -28,7 +28,22 @@ export const pwaOptions: Partial<VitePWAOptions> = {
         name: 'My folder online',
         short_name: 'Share folder',
         description: 'Small webapp to share files between devices (peer-to-peer)',
-        theme_color: '#ffffff',
+        theme_color: '#d3e2e7',
+        background_color: '#d3e2e7',
+        screenshots: [
+            {
+                src: '/screenshots/dark-theme.png',
+                sizes: '756x756',
+                type: 'image/png',
+                form_factor: 'wide',
+            },
+            {
+                src: '/screenshots/light-theme.png',
+                sizes: '756x756',
+                type: 'image/png',
+                form_factor: 'wide',
+            },
+        ],
         icons: [
             {
                 src: 'pwa-64x64.png',
