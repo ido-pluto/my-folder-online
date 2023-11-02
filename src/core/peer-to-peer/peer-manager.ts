@@ -12,7 +12,9 @@ export type NewPeerResponse = {
 }
 
 export default class PeerManager {
-    private _serverWS?: WebSocketRequest;
+    private static _serverWS = new WebSocketRequest(WEB_SOCKET_SERVER);
+    private static _serverWSActiveDirectories = 0;
+    private _destroyed = false;
     public shareId = uuid();
 
     private _peers: {
@@ -23,12 +25,23 @@ export default class PeerManager {
         [resource: string]: PeerManagerRequestCallback
     } = {};
 
+    public constructor() {
+        this._createNewPeer = this._createNewPeer.bind(this);
+        this._signalPeer = this._signalPeer.bind(this);
+    }
+
     public async initServerWS() {
-        this._serverWS = new WebSocketRequest(new WebSocket(WEB_SOCKET_SERVER));
-        this._serverWS.onRequest('new-peer', this._createNewPeer.bind(this));
-        this._serverWS.onRequest('signal-peer', this._signalPeer.bind(this));
-        await this._serverWS.connect();
-        await this._serverWS.request('update-id', this.shareId);
+        const serverWS = await this._makeSureServerWSConnected();
+
+        await serverWS.request('new-share', this.shareId);
+
+        PeerManager._serverWSActiveDirectories++;
+        serverWS.listen(`new-peer/${this.shareId}`, this._createNewPeer);
+        serverWS.listen(`signal-peer/${this.shareId}`, this._signalPeer);
+    }
+
+    public listen(resource: string, callback: PeerManagerRequestCallback) {
+        this._requestInfo[resource] = callback;
     }
 
     private _createNewPeer(): Promise<NewPeerResponse> {
@@ -63,6 +76,36 @@ export default class PeerManager {
         return {ok: true};
     }
 
+    destroy() {
+        if (this._destroyed || !PeerManager._serverWS)
+            return;
+
+        const serverWS = PeerManager._serverWS;
+
+        serverWS.unregisterListen(`new-peer/${this.shareId}`);
+        serverWS.unregisterListen(`signal-peer/${this.shareId}`);
+
+        for(const peer of Object.values(this._peers)){
+            peer.destroy();
+        }
+
+        PeerManager._serverWSActiveDirectories--;
+        this._destroyed = true;
+
+        if (PeerManager._serverWSActiveDirectories === 0) {
+            serverWS.close();
+        }
+    }
+
+    private async _makeSureServerWSConnected() {
+        PeerManager._serverWS ??= new WebSocketRequest(WEB_SOCKET_SERVER);
+        if (!PeerManager._serverWS.connected) {
+            await PeerManager._serverWS.connect();
+        }
+
+        return PeerManager._serverWS;
+    }
+
     private _initPeerMethods(peer: InstanceType<typeof SimplePeer>, peerId: string){
         peer.once('close', () => {
             delete this._peers[peerId];
@@ -70,21 +113,9 @@ export default class PeerManager {
 
         const peerRequest = new PeerRequest(peer);
         for(const [resource, callback] of Object.entries(this._requestInfo)){
-            peerRequest.onRequest(resource, (body, sendChunk) =>
+            peerRequest.listen(resource, (body, sendChunk) =>
                 callback(body, sendChunk, peerRequest)
             );
         }
-    }
-
-    public onRequest(resource: string, callback: PeerManagerRequestCallback){
-        this._requestInfo[resource] = callback;
-    }
-
-    destroy() {
-        this._serverWS?.close();
-        for(const peer of Object.values(this._peers)){
-            peer.destroy();
-        }
-        this._peers = {};
     }
 }

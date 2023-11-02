@@ -3,8 +3,8 @@ import {v4 as uuid} from 'uuid';
 import {MessageType} from './types.ts';
 import StreamSignals from '../share/remote-download/stream-signals.ts';
 import sleep from 'sleep-promise';
-import {BSON} from 'bson';
 import type {Document} from 'bson';
+import {BSON} from 'bson';
 import deserializeBSON from './bson.ts';
 import ReceiveChunk from './receive-chunk.ts';
 
@@ -200,7 +200,7 @@ export default class PeerRequest {
         });
     }
 
-    public onRequest<Body, Response>(resource: string, callback: (body: Body, sendChunk: CallbackChunk<Response>) => Promise<void>) {
+    public listen<Body, Response>(resource: string, callback: (body: Body, sendChunk: CallbackChunk<Response>) => Promise<void>) {
         this._requestEvent[resource] = callback;
     }
 }

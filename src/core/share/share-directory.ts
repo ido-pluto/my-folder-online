@@ -32,8 +32,8 @@ export default class ShareDirectory {
         this._fs.readFiles();
         this._peerManager = new PeerManager();
         await this._peerManager.initServerWS();
-        this._peerManager.onRequest('/fs',  this._fetchFS.bind(this));
-        this._peerManager.onRequest('/file',  this._streamFile.bind(this));
+        this._peerManager.listen('/fs', this._fetchFS.bind(this));
+        this._peerManager.listen('/file', this._streamFile.bind(this));
     }
 
     private _fetchFS(_: unknown, sendChunk: CallbackChunk<string>){

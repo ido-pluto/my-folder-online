@@ -17,7 +17,7 @@ export default function ShareFiles({files, onStopShare}: ShareFilesProps) {
             setLoading.off();
         } catch (error) {
             toast({
-                title: 'Can share directory',
+                title: 'Can not share directory',
                 description: (error as Error).message,
                 status: 'error',
                 isClosable: true

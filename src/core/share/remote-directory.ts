@@ -24,7 +24,7 @@ export default class RemoteDirectory {
     }
 
     public async init() {
-        this._serverWS = new WebSocketRequest(new WebSocket(WEB_SOCKET_SERVER));
+        this._serverWS = new WebSocketRequest(WEB_SOCKET_SERVER);
         await this._serverWS.connect();
         await this._connect();
         await this._fetchFS();

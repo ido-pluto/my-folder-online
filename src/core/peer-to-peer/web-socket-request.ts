@@ -10,22 +10,72 @@ export default class WebSocketRequest {
         [id: string]: (data: any) => any
     } = {};
 
-    public constructor(private _ws: WebSocket) {
+    private _ws?: WebSocket;
+
+    get connected() {
+        return this._ws?.readyState === WebSocket.OPEN;
     }
 
-    async connect() {
-        this._listenForData();
+    public constructor(private _wsURL: string) {
+    }
+
+    private _waitForFirstMessage() {
+        const ws = this._ws;
+        if (!ws) {
+            throw new Error('No ws connection');
+        }
+
         return new Promise((res, rej) => {
-            this._ws.addEventListener('open', res);
-            this._ws.addEventListener('error', rej);
+            const onceConnected = () => {
+                ws.removeEventListener('message', onceConnected);
+                ws.removeEventListener('error', rej);
+                res(true);
+            };
+            ws.addEventListener('message', onceConnected);
+            ws.addEventListener('error', rej);
         });
     }
 
+    async connect() {
+        if (this.connected)
+            return;
+
+        if (this._ws?.readyState === WebSocket.CONNECTING)
+            await this._waitForFirstMessage();
+
+        this._ws = new WebSocket(this._wsURL);
+        await this._waitForFirstMessage();
+        this._listenForData();
+    }
+
     private _sendJSON(data: any) {
+        if (!this._ws) {
+            throw new Error('No ws connection');
+        }
+
         this._ws.send(JSON.stringify(data));
     }
 
+    public request<Response, Body>(resource: string, body?: Body): Promise<Response> {
+        const requestId = uuid();
+
+        return new Promise(res => {
+            this._responseInfo[requestId] = res;
+
+            this._sendJSON({
+                type: MessageType.REQUEST,
+                resource,
+                requestId,
+                body
+            });
+        });
+    }
+
     private _listenForData() {
+        if (!this._ws) {
+            throw new Error('No ws connection');
+        }
+
         this._ws.addEventListener('message', ({data}) => {
             const {type, resource, requestId, body} = JSON.parse(data);
 
@@ -68,26 +118,15 @@ export default class WebSocketRequest {
         responseInfo(body);
     }
 
-    public request<Response, Body>(resource: string, body?: Body): Promise<Response> {
-        const requestId = uuid();
-
-        this._sendJSON({
-            type: MessageType.REQUEST,
-            resource,
-            requestId,
-            body
-        });
-
-        return new Promise(res => {
-            this._responseInfo[requestId] = res;
-        });
-    }
-
-    public onRequest<Body, Response>(resource: string, callback: (body: Body) => Response) {
+    public listen<Body, Response>(resource: string, callback: (body: Body) => Response) {
         this._requestInfo[resource] = callback;
     }
 
+    public unregisterListen(resource: string) {
+        delete this._requestInfo[resource];
+    }
+
     public close() {
-        this._ws.close();
+        this._ws?.close();
     }
 }
