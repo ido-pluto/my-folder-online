@@ -34,13 +34,13 @@ export const pwaOptions: Partial<VitePWAOptions> = {
         background_color: '#d3e2e7',
         screenshots: [
             {
-                src: '/screenshots/dark-theme.png',
+                src: '/screenshots/download-dark.png',
                 sizes: '756x756',
                 type: 'image/png',
                 form_factor: 'wide',
             },
             {
-                src: '/screenshots/light-theme.png',
+                src: '/screenshots/explorer-theme.png',
                 sizes: '756x756',
                 type: 'image/png',
                 form_factor: 'wide',
