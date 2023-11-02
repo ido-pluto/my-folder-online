@@ -59,7 +59,7 @@ export default function ViewTable({directory, elementProps, selection}: ViewTabl
                                 backgroundColor={backGroundSelection(child.path)}
                             >
                                 <Td>
-                                    <Checkbox isChecked={selection.includes(child.path)}/>
+                                    <Checkbox isChecked={selection.includes(child.path)} onChange={() => elementProps.onClick?.(child)}/>
                                 </Td>
                                 <Td>{child.name}</Td>
                                 <Td>{prettyBytes(child.size)}</Td>
