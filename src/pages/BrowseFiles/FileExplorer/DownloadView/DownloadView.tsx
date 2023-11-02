@@ -1,24 +1,26 @@
 import RemoteDownloadManager from '../../../../core/remote-download-manager.ts';
-import {Box, Heading, Show, useToast} from '@chakra-ui/react';
+import {Box, Button, Collapse, Heading, Show, useDisclosure, useToast} from '@chakra-ui/react';
 import DownloadProgress from './DownloadProgress.tsx';
 import {useEffect} from 'react';
-import {useForceUpdate} from 'framer-motion';
+import theme from '../../../../config/theme.ts';
+import {FcCollapse, FcExpand} from 'react-icons/fc';
+import {useCounter} from 'usehooks-ts';
 
 const BASE_DOWNLOAD_VIEW_BOX_PROPS: Parameters<typeof Box>[0] = {
     border: '1px',
     borderColor: 'var(--chakra-colors-chakra-border-color)',
-    p: 2,
     position: 'absolute'
 };
 
 export type DownloadViewProps = { downloadManager: RemoteDownloadManager };
 
 export default function DownloadView({downloadManager}: DownloadViewProps) {
-    const [update] = useForceUpdate();
+    const forceUpdate = useCounter();
     const toast = useToast();
+    const {isOpen, onToggle, onOpen} = useDisclosure();
 
     useEffect(() => {
-        downloadManager.on('change', update);
+        downloadManager.on('change', forceUpdate.increment);
         downloadManager.on('downloadedFinished', download => {
             toast({
                 title: 'Download finished',
@@ -27,14 +29,26 @@ export default function DownloadView({downloadManager}: DownloadViewProps) {
                 isClosable: true
             });
         });
-    }, [downloadManager, toast, update]);
 
-    const Downloads = <>
-        <Heading size="sm">Downloads:</Heading>
-        {downloadManager.activeDownloads.map(download =>
-            <DownloadProgress key={download.item.path} remoteDownload={download}/>
-        )}
-    </>;
+        onOpen();
+    }, [downloadManager]);
+
+    const Downloads = <Box backgroundColor={theme.colors.white} _dark={{backgroundColor: theme.colors.gray[800]}} p={3}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Heading size="sm">{downloadManager.activeDownloads.length} Downloads:</Heading>
+            <Button variant="link" onClick={onToggle}>
+                {isOpen ?
+                    <FcCollapse/> :
+                    <FcExpand/>
+                }
+            </Button>
+        </Box>
+        <Collapse in={isOpen} animateOpacity>
+            {downloadManager.activeDownloads.map(download =>
+                <DownloadProgress key={download.item.path} remoteDownload={download}/>
+            )}
+        </Collapse>
+    </Box>;
 
     return downloadManager.activeDownloads.length ? <>
             <Show above="md">
