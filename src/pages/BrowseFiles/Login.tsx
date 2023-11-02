@@ -1,11 +1,11 @@
 import {Box, Button, Container, Heading, Input, Text, useBoolean, useColorMode, useToast} from '@chakra-ui/react';
 import {useCallback, useState} from 'react';
-import {WEB_SERVER} from '../../config/const.ts';
 import theme from '../../config/theme.ts';
 import Particles from 'react-particles';
 import type {Engine} from 'tsparticles-engine';
 import {loadSlim} from 'tsparticles-slim';
 import ParticleOptions from './particles.json';
+import ServerSettings from '../../core/app-store/server-settings.ts';
 
 const SHARE_NOT_FOUND_STATUS = 404;
 const SHARE_SERVER_ERROR_STATUS = 500;
@@ -72,7 +72,7 @@ export default function Login({updatePassword}: LoginProps) {
 
 
 async function checkPasswordOK(password: string) {
-    const {status} = await fetch(`${WEB_SERVER}/share/${encodeURIComponent(password)}/exist`);
+    const {status} = await fetch(`${ServerSettings.httpServer}/share/${encodeURIComponent(password)}/exist`);
 
     switch (status) {
         case SHARE_OK_STATUS:

@@ -21,6 +21,7 @@
     "emittery": "^1.0.1",
     "framer-motion": "^10.16.4",
     "ipull": "^1.1.0",
+    "local-storage-proxy": "^4.0.4",
     "lodash": "^4.17.21",
     "native-file-system-adapter": "^3.0.0",
     "pretty-bytes": "^6.1.1",

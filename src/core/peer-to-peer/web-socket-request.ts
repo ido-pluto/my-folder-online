@@ -16,7 +16,7 @@ export default class WebSocketRequest {
         return this._ws?.readyState === WebSocket.OPEN;
     }
 
-    public constructor(private _wsURL: string) {
+    public constructor() {
     }
 
     private _waitForFirstMessage() {
@@ -36,14 +36,14 @@ export default class WebSocketRequest {
         });
     }
 
-    async connect() {
+    async connect(wsURL: string) {
         if (this.connected)
             return;
 
         if (this._ws?.readyState === WebSocket.CONNECTING)
             await this._waitForFirstMessage();
 
-        this._ws = new WebSocket(this._wsURL);
+        this._ws = new WebSocket(wsURL);
         await this._waitForFirstMessage();
         this._listenForData();
     }

@@ -4,6 +4,7 @@ import Logo from './Logo.tsx';
 import {NavLink as ReactRouterLink} from 'react-router-dom';
 import GitHubButton from 'react-github-btn';
 import {MoonIcon, SunIcon} from '@chakra-ui/icons';
+import Settings from './Settings/Settings.tsx';
 
 export default function Header() {
     const {colorMode, toggleColorMode} = useColorMode();
@@ -35,6 +36,7 @@ export default function Header() {
             <IconButton aria-label={'Toggle theme'} onClick={toggleColorMode} rounded={'100%'} icon={
                 colorMode === 'light' ? <MoonIcon/> : <SunIcon/>
             }/>
+            <Settings/>
         </Box>
     </Box>;
 }

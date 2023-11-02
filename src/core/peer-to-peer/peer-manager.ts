@@ -1,8 +1,8 @@
 import SimplePeer from 'simple-peer';
-import {WEB_SOCKET_SERVER} from '../../config/const.ts';
 import WebSocketRequest from './web-socket-request.ts';
 import {v4 as uuid} from 'uuid';
 import PeerRequest, {CallbackChunk} from './peer-request.ts';
+import ServerSettings from '../app-store/server-settings.ts';
 
 type PeerManagerRequestCallback = (body: any, sendChunk: CallbackChunk<any>, peer: PeerRequest) => any;
 export type NewPeerResponse = {
@@ -12,7 +12,7 @@ export type NewPeerResponse = {
 }
 
 export default class PeerManager {
-    private static _serverWS = new WebSocketRequest(WEB_SOCKET_SERVER);
+    private static _serverWS = new WebSocketRequest();
     private static _serverWSActiveDirectories = 0;
     private _destroyed = false;
     public shareId = uuid();
@@ -98,9 +98,9 @@ export default class PeerManager {
     }
 
     private async _makeSureServerWSConnected() {
-        PeerManager._serverWS ??= new WebSocketRequest(WEB_SOCKET_SERVER);
+        PeerManager._serverWS ??= new WebSocketRequest();
         if (!PeerManager._serverWS.connected) {
-            await PeerManager._serverWS.connect();
+            await PeerManager._serverWS.connect(ServerSettings.wsServer);
         }
 
         return PeerManager._serverWS;

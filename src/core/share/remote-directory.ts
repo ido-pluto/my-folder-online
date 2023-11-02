@@ -1,5 +1,4 @@
 import WebSocketRequest from '../peer-to-peer/web-socket-request.ts';
-import {WEB_SOCKET_SERVER} from '../../config/const.ts';
 import SimplePeer from 'simple-peer';
 import {NewPeerResponse} from '../peer-to-peer/peer-manager.ts';
 import PeerRequest from '../peer-to-peer/peer-request.ts';
@@ -8,6 +7,7 @@ import {LikeFile} from './virtual-fs/virtual-item.ts';
 import StreamSignals from './remote-download/stream-signals.ts';
 import SimpleStream from '../peer-to-peer/simple-stream.ts';
 import {ShareDirectoryMetadata} from './share-directory.ts';
+import ServerSettings from '../app-store/server-settings.ts';
 
 export type StreamResponse<T> = T | {error: string};
 export type StreamCallback = (response: Uint8Array, chunk: number, totalChunks: number) => Promise<void> | void
@@ -24,8 +24,8 @@ export default class RemoteDirectory {
     }
 
     public async init() {
-        this._serverWS = new WebSocketRequest(WEB_SOCKET_SERVER);
-        await this._serverWS.connect();
+        this._serverWS = new WebSocketRequest();
+        await this._serverWS.connect(ServerSettings.wsServer);
         await this._connect();
         await this._fetchFS();
     }
