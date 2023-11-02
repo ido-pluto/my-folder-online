@@ -1,6 +1,7 @@
 import VirtualDirectory from './virtual-directory.ts';
 import VirtualFile from './virtual-file.ts';
 import {LikeFile} from './virtual-item.ts';
+import {BAN_PATH} from '../../../config/filter-files.ts';
 
 export type FSMap = LikeFile[];
 
@@ -8,6 +9,20 @@ export default class VirtualFs {
     public files = new VirtualDirectory('/');
 
     private constructor(private _rawFiles: FSMap) {
+        this._filterRawFiles();
+    }
+
+    private _filterRawFiles() {
+        const newRawFiles: FSMap = [];
+
+        for (const file of this._rawFiles) {
+            const fileBan = BAN_PATH.find(path => file.webkitRelativePath.includes(path));
+            if (fileBan) continue;
+
+            newRawFiles.push(file);
+        }
+
+        this._rawFiles = newRawFiles;
     }
 
     public readFiles() {
