@@ -2544,7 +2544,7 @@ const THEME_SETTINGS = {
         }
     },
     "config": {
-        "useSystemColorMode": false,
+        'useSystemColorMode': true,
         "initialColorMode": "system",
         "cssVarPrefix": "chakra"
     }

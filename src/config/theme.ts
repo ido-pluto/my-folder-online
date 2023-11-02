@@ -3,9 +3,9 @@ import THEME_SETTINGS from './theme-options.ts';
 
 const config: ThemeConfig = {
     initialColorMode: 'system',
-    useSystemColorMode: false,
+    useSystemColorMode: false
 };
 
-const theme = extendTheme({config}, THEME_SETTINGS) as typeof THEME_SETTINGS;
+const theme = extendTheme(THEME_SETTINGS, {config}) as typeof THEME_SETTINGS;
 
 export default theme;

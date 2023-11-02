@@ -18,6 +18,7 @@
     "@emotion/styled": "^11.11.0",
     "browser-fs-access": "^0.35.0",
     "bson": "^6.2.0",
+    "color-scheme-detector": "^1.0.1",
     "emittery": "^1.0.1",
     "framer-motion": "^10.16.4",
     "ipull": "^1.1.0",
