@@ -10,7 +10,7 @@ const CHECK_VALID_SERVER_PATH = '/my-folder-online';
 export default function WServer() {
     const [server, setServer] = useState<string>(settings.webServer);
     const [secure, setSecure] = useBoolean(settings.secure);
-    const [valid, setValid] = useBoolean(false);
+    const [valid, setValid] = useBoolean(true);
 
     useAsyncEffect(async () => {
         if (await checkWebServer(server, secure)) {
