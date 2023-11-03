@@ -6,7 +6,7 @@ import {ICE_SERVERS, SERVER_SECURE, WEB_SERVER} from '../../config/const.ts';
 const defaultSettings = {
     webServer: WEB_SERVER,
     secure: SERVER_SECURE,
-    iceServers: ICE_SERVERS as string[]
+    iceServers: ICE_SERVERS
 };
 
 export const settings = localStorageProxy('settings', {
