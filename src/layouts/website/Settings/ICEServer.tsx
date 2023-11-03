@@ -4,9 +4,10 @@ import {settings} from '../../../core/app-store/localstorage.ts';
 import {ICE_SERVERS} from '../../../config/const.ts';
 import useArrayState from 'use-array-state';
 import {BiTrash} from 'react-icons/bi';
+import {ChangeEvent} from 'react';
 
 export default function ICEServer() {
-    const [servers, setServers] = useArrayState<string>(settings.iceServers);
+    const [servers, setServers] = useArrayState<RTCIceServer>(settings.iceServers);
 
     useAsyncEffect(async () => {
         settings.iceServers = servers;
@@ -16,17 +17,30 @@ export default function ICEServer() {
         setServers.set(ICE_SERVERS);
     };
 
+    const updateServer = (index: number, key: keyof RTCIceServer) => {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            setServers.update(index, {
+                ...servers[index],
+                [key]: event.target.value
+            });
+        };
+    };
+
     return <FormControl mt={8}>
         <Box display="flex" justifyContent="space-between">
             <FormLabel>ICE servers</FormLabel>
             <Box display="flex" gap={2}>
-                <Button onClick={() => setServers.push('')} colorScheme="green" size="xs">Add</Button>
+                <Button onClick={() => setServers.push({urls: ''})} colorScheme="green" size="xs">Add</Button>
                 <Button onClick={restoreDefault} size="xs">Restore default</Button>
             </Box>
         </Box>
         {servers.map((server, i) =>
             <Box display="flex" justifyContent="space-between" alignItems="center" key={i} gap={2} mt={3}>
-                <Input value={server} onChange={e => setServers.update(i, e.target.value)}/>
+                <Box display="flex" gap={2}>
+                    <Input value={server.urls} onChange={updateServer(i, 'urls')} placeholder="url"/>
+                    <Input value={server.username} onChange={updateServer(i, 'username')} placeholder="username"/>
+                    <Input value={server.credential} onChange={updateServer(i, 'credential')} placeholder="credential"/>
+                </Box>
                 <Button onClick={() => setServers.remove(i)} colorScheme="red" fontSize={20}>
                     <BiTrash/>
                 </Button>

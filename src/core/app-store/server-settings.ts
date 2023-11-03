@@ -14,6 +14,6 @@ export default class ServerSettings {
     }
 
     static get iceServers() {
-        return settings.iceServers.map(url => ({urls: url}));
+        return settings.iceServers;
     }
 }
