@@ -7,6 +7,10 @@ RUN npm ci
 
 COPY . .
 
+# Build args - default web server
+ARG VITE_WEB_SERVER
+ARG VITE_SERVER_SECURE
+
 # Build the React app for production
 RUN npm run build
 
