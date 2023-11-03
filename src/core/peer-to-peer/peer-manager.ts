@@ -80,8 +80,10 @@ export default class PeerManager {
         if (this._destroyed || !PeerManager._serverWS)
             return;
 
+
         const serverWS = PeerManager._serverWS;
 
+        serverWS.request('closed-share', this.shareId);
         serverWS.unregisterListen(`new-peer/${this.shareId}`);
         serverWS.unregisterListen(`signal-peer/${this.shareId}`);
 
