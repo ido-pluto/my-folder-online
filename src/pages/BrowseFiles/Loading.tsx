@@ -1,6 +1,6 @@
-import { CirclesWithBar } from  'react-loader-spinner'
+import {CirclesWithBar} from 'react-loader-spinner';
 import {Box, Heading, theme, useColorMode} from '@chakra-ui/react';
-import { TypeAnimation } from 'react-type-animation';
+import {TypeAnimation} from 'react-type-animation';
 
 function LoadingAnimation({size}: {size: number}) {
     const {colorMode} = useColorMode();
@@ -17,7 +17,7 @@ export default function Loading() {
     const loadingBackgroundColor = colorMode === 'light' ? theme.colors.gray['50'] : theme.colors.gray['900'];
 
     return <Box display="flex" background={loadingBackgroundColor} flexGrow={1} flexDirection="column" justifyContent="center" alignItems="center">
-        <Heading size="2xl" mt={-20} mb={40} textShadow={'4px 3px #74797a80'}>
+        <Heading size="2xl" mb={40} textShadow={'4px 3px #74797a80'}>
             <TypeAnimation
                 sequence={[
                     'Connecting...',
