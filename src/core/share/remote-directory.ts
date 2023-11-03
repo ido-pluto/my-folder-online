@@ -39,7 +39,10 @@ export default class RemoteDirectory {
         // SimplePeer is not es6 module
         this.peerEvents = new SimplePeer({
             initiator: false,
-            trickle: false
+            trickle: false,
+            config: {
+                iceServers: ServerSettings.iceServers
+            }
         });
 
         const remoteSignal = await serverWS.request<NewPeerResponse, string>('new-peer', this._shareId);

@@ -1,7 +1,8 @@
-import {Checkbox, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Text, useBoolean} from '@chakra-ui/react';
+import {Box, Button, Checkbox, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, useBoolean} from '@chakra-ui/react';
 import {useState} from 'react';
 import useAsyncEffect from 'use-async-effect';
 import {settings} from '../../../core/app-store/localstorage.ts';
+import {SERVER_SECURE, WEB_SERVER} from '../../../config/const.ts';
 
 const STATUS_OK = 200;
 const CHECK_VALID_SERVER_PATH = '/my-folder-online';
@@ -21,17 +22,29 @@ export default function WServer() {
         }
     }, [server, secure]);
 
-    return <>
-        <Text color="gray.500"></Text>
-        <FormControl my={3} isInvalid={!valid}>
-            <FormLabel>Tracker server</FormLabel>
+    const restoreDefault = () => {
+        setServer(WEB_SERVER);
+
+        if (SERVER_SECURE) {
+            setSecure.on();
+        } else {
+            setSecure.off();
+        }
+    };
+
+    return <Box mb={5}>
+        <FormControl my={2} isInvalid={!valid}>
+            <Box display="flex" justifyContent="space-between">
+                <FormLabel>Tracker server</FormLabel>
+                <Button onClick={restoreDefault} size="xs">Restore default</Button>
+            </Box>
             <Input value={server} onChange={e => setServer(e.target.value)} placeholder={'my-server.com'}/>
             {valid ? <FormHelperText>The tracker server is used to connect between peers.</FormHelperText> :
                 <FormErrorMessage>Cannot connect to server.</FormErrorMessage>
             }
         </FormControl>
         <Checkbox isChecked={secure} onChange={setSecure.toggle}>Secure</Checkbox>
-    </>;
+    </Box>;
 }
 
 

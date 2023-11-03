@@ -12,4 +12,8 @@ export default class ServerSettings {
     static get httpServer() {
         return `http${this._secureChar}://${settings.webServer}`;
     }
+
+    static get iceServers() {
+        return settings.iceServers.map(url => ({urls: url}));
+    }
 }
