@@ -2,17 +2,20 @@ FROM node:20 as build
 
 WORKDIR /app
 
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
 
 # Build the React app for production
-RUN npm ci
 RUN npm run build
 
 # Use Nginx as the production server
 FROM nginx:alpine
 
-# Copy the built React app to Nginx's web server directory
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+
+COPY --from=prod /app/dist .
 
 EXPOSE 80
 
