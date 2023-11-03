@@ -6,6 +6,8 @@ import useArrayState from 'use-array-state';
 import {BiTrash} from 'react-icons/bi';
 import {ChangeEvent} from 'react';
 
+const MAX_ICE_SERVERS = 5;
+
 export default function ICEServer() {
     const [servers, setServers] = useArrayState<RTCIceServer>(settings.iceServers);
 
@@ -30,7 +32,7 @@ export default function ICEServer() {
         <Box display="flex" justifyContent="space-between">
             <FormLabel>ICE servers</FormLabel>
             <Box display="flex" gap={2}>
-                <Button onClick={() => setServers.push({urls: ''})} colorScheme="green" size="xs">Add</Button>
+                <Button onClick={() => setServers.push({urls: ''})} colorScheme="green" size="xs" disabled={servers.length >= MAX_ICE_SERVERS}>Add</Button>
                 <Button onClick={restoreDefault} size="xs">Restore default</Button>
             </Box>
         </Box>
