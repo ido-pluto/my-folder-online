@@ -26,11 +26,11 @@ export default function Header() {
         </ChakraLink>
 
         <Box display="flex" gap={5} alignItems="end">
-            <GitHubButton href="https://github.com/buttons/github-buttons"
+            <GitHubButton href="https://github.com/my-folder-online/my-folder-online"
                           data-icon="octicon-star"
                           data-size="large"
                           data-show-count="true"
-                          aria-label="Star buttons/github-buttons on GitHub">
+                          aria-label="Star My-folder-Online on GitHub">
                 Star
             </GitHubButton>
             <IconButton aria-label={'Toggle theme'} onClick={toggleColorMode} rounded={'100%'} icon={
