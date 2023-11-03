@@ -40,7 +40,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
                 form_factor: 'wide',
             },
             {
-                src: '/screenshots/explorer-theme.png',
+                src: '/screenshots/explorer-dark.png',
                 sizes: '756x756',
                 type: 'image/png',
                 form_factor: 'wide',
