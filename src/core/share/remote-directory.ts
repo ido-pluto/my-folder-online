@@ -39,7 +39,7 @@ export default class RemoteDirectory {
         // SimplePeer is not es6 module
         this.peerEvents = new SimplePeer({
             initiator: false,
-            trickle: false,
+            trickle: true,
             config: {
                 iceServers: ServerSettings.iceServers
             }

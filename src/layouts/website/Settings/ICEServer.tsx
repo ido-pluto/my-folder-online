@@ -12,7 +12,20 @@ export default function ICEServer() {
     const [servers, setServers] = useArrayState<RTCIceServer>(settings.iceServers);
 
     useAsyncEffect(async () => {
-        settings.iceServers = servers;
+        const newServers = [];
+        for (const server of servers) {
+            if (!server.urls)
+                continue;
+
+            if (!server.username)
+                delete server.username;
+
+            if (!server.credential)
+                delete server.credential;
+
+            newServers.push(server);
+        }
+        settings.iceServers = newServers;
     }, [servers]);
 
     const restoreDefault = () => {
@@ -40,8 +53,8 @@ export default function ICEServer() {
             <Box display="flex" justifyContent="space-between" alignItems="center" key={i} gap={2} mt={3}>
                 <Box display="flex" gap={2}>
                     <Input value={server.urls} onChange={updateServer(i, 'urls')} placeholder="url"/>
-                    <Input value={server.username} onChange={updateServer(i, 'username')} placeholder="username"/>
-                    <Input value={server.credential} onChange={updateServer(i, 'credential')} placeholder="credential"/>
+                    <Input value={server.username || ''} onChange={updateServer(i, 'username')} placeholder="username"/>
+                    <Input value={server.credential || ''} onChange={updateServer(i, 'credential')} placeholder="credential"/>
                 </Box>
                 <Button onClick={() => setServers.remove(i)} colorScheme="red" fontSize={20}>
                     <BiTrash/>
