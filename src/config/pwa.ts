@@ -1,6 +1,6 @@
-import {ManifestOptions, VitePWAOptions} from 'vite-plugin-pwa';
-import {Preset} from '@vite-pwa/assets-generator/config';
-import {DeepPartial} from '@chakra-ui/react';
+import type {ManifestOptions, VitePWAOptions} from 'vite-plugin-pwa';
+import type {Preset} from '@vite-pwa/assets-generator/config';
+import type {DeepPartial} from '@chakra-ui/react';
 
 export const pwaOptions: Partial<VitePWAOptions> = {
     includeAssets: ['logo.svg', 'pwa.svg', 'pwa.png'],

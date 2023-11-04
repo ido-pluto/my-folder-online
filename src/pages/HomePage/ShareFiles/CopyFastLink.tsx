@@ -1,12 +1,13 @@
 import {Button, useToast} from '@chakra-ui/react';
 import {CopyIcon} from '@chakra-ui/icons';
 
-export type CopyFastLink = { token: string};
-export default function CopyFastLink({token}: CopyFastLink) {
+export type CopyFastLink = { getToken: () => string };
+export default function CopyFastLink({getToken}: CopyFastLink) {
     const toast = useToast();
 
-    const fastLink = `${window.location.origin}/browse-files/${token}`;
     const copyLink = async () => {
+        const fastLink = `${window.location.origin}/browse-files/${getToken()}`;
+
         try {
             await navigator.clipboard.writeText(fastLink);
             toast({

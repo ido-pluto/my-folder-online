@@ -14,16 +14,23 @@ export default function ICEServer() {
     useAsyncEffect(async () => {
         const newServers = [];
         for (const server of servers) {
-            if (!server.urls)
+            if (!server.urls.length)
                 continue;
 
-            if (!server.username)
-                delete server.username;
+            const newServer: RTCIceServer = {urls: server.urls};
 
-            if (!server.credential)
-                delete server.credential;
+            if (server.username)
+                newServer.username = server.username;
 
-            newServers.push(server);
+            if (server.credential)
+                newServer.credential = server.credential;
+
+            if (typeof server.urls === 'string')
+                newServer.urls = server.urls.split(',')
+                    .map(url => url.trim())
+                    .filter(Boolean);
+
+            newServers.push(newServer);
         }
         settings.iceServers = newServers;
     }, [servers]);

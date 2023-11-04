@@ -38,7 +38,7 @@ export default function ShareFiles({files, onStopShare}: ShareFilesProps) {
     const shareInfo = <Box display="flex" gap={3}>
         <Input placeholder="Directory name" onChange={updateDirectoryName} flexGrow={1}/>
         <Box display="flex" gap={2}>
-            <CopyFastLink token={activeShare.shareId || ''}/>
+            <CopyFastLink getToken={() => activeShare.peerId || ''}/>
             <Button onClick={stopShare} colorScheme="red" variant="ghost" title="Abort">
                 <AiOutlineStop/>
             </Button>

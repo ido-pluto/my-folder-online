@@ -1,19 +1,17 @@
-import SimplePeer from 'simple-peer';
 import {v4 as uuid} from 'uuid';
 import {MessageType} from './types.ts';
 import StreamSignals from '../share/remote-download/stream-signals.ts';
 import sleep from 'sleep-promise';
-import type {Document} from 'bson';
-import {BSON} from 'bson';
-import deserializeBSON from './bson.ts';
 import ReceiveChunk from './receive-chunk.ts';
+import Peer, {DataConnection, PeerOptions} from 'peerjs';
+import {getPeerOptions} from '../app-store/server-settings.ts';
 
 const QUEUE_IS_FULL_ERROR = 'RTCDataChannel send queue is full';
 const FULL_DELAY = 100; // 100ms
 const MAX_RETRY_SEND = 15;
 export type CallbackChunk<T> = (response: T, chunkIndex?: number, totalChunks?: number) => any;
 
-export default class PeerRequest {
+export default class PeerDataConnection {
     /**
      * on **response** data from the peer
      */
@@ -39,24 +37,43 @@ export default class PeerRequest {
         }
     } = {};
 
-    public constructor(private _peerConnected: InstanceType<typeof SimplePeer>) {
+    public constructor(private _dataConnection: DataConnection) {
         this._listenForData();
+        this._initEvents();
     }
 
-    public connect() {
-        return new Promise(res => {
-            this._peerConnected.on('connect', res);
+    private _initEvents() {
+        this._dataConnection.on('iceStateChanged', (state: any) => {
+            console.log('iceStateChanged', state);
+        });
+
+        this._dataConnection.on('error', (error: any) => {
+            console.log('error', error);
+        });
+
+        this._dataConnection.on('close', () => {
+            console.log(`close ${this._dataConnection.peer}`);
+        });
+
+        this._dataConnection.on('open', () => {
+            console.log(`open ${this._dataConnection.peer}`);
         });
     }
 
-    private _sendBSON(data: Document) {
-        const bson = BSON.serialize(data);
-        this._peerConnected.send(bson);
+    public async waitOpen(): Promise<void> {
+        if (this._dataConnection.open) {
+            throw new Error('Connection already open');
+        }
+
+        return await new Promise((res, rej) => {
+            this._dataConnection.once('open', res);
+            this._dataConnection.once('error', rej);
+        });
     }
 
     private _listenForData() {
-        this._peerConnected.on('data', data => {
-            const {type, resource, requestId, body, chunkIndex, totalChunks} = deserializeBSON(data);
+        this._dataConnection.on('data', (data: any) => {
+            const {type, resource, requestId, body, chunkIndex, totalChunks} = data;
 
             switch (type) {
                 case MessageType.REQUEST:
@@ -147,7 +164,7 @@ export default class PeerRequest {
         while (retrySend) {
             await this._handelRequestPreSend(requestId);
             try {
-                this._sendBSON({
+                this._dataConnection.send({
                     type: MessageType.RESPONSE,
                     requestId,
                     body,
@@ -172,7 +189,7 @@ export default class PeerRequest {
 
         if (!responseInfo) {
             console.error(`No callback for requestId ${requestId}`);
-            this._sendBSON({
+            this._dataConnection.send({
                 type: MessageType.ABORT,
                 requestId
             });
@@ -184,7 +201,7 @@ export default class PeerRequest {
 
     public request<Response, Body>(resource: string, body: Body, callback: CallbackChunk<Response>, signal?: StreamSignals) {
         const requestId = uuid();
-        const removeEvents = signal?.addEvents(requestId, this._sendBSON.bind(this));
+        const removeEvents = signal?.addEvents(requestId, this._dataConnection.send.bind(this._dataConnection));
 
         const onClose = () => {
             delete this._receiveInfo[requestId];
@@ -192,7 +209,7 @@ export default class PeerRequest {
         };
 
         this._receiveInfo[requestId] = new ReceiveChunk(callback, onClose);
-        this._sendBSON({
+        this._dataConnection.send({
             type: MessageType.REQUEST,
             resource,
             requestId,
@@ -202,5 +219,15 @@ export default class PeerRequest {
 
     public listen<Body, Response>(resource: string, callback: (body: Body, sendChunk: CallbackChunk<Response>) => Promise<void>) {
         this._requestEvent[resource] = callback;
+    }
+
+    public static async newPeerConnection(options: PeerOptions = {}): Promise<{ peer: Peer, id: string }> {
+        const peer = new Peer({...getPeerOptions(), ...options});
+        return await new Promise((res, rej) => {
+            peer.once('open', id => {
+                res({peer, id});
+            });
+            peer.once('error', rej);
+        });
     }
 }
