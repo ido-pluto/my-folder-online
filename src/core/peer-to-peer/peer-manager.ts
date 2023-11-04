@@ -48,7 +48,6 @@ export default class PeerManager {
         const peerId = uuid();
         const peer = new SimplePeer({
             initiator: true,
-            trickle: true,
             config: {
                 iceServers: ServerSettings.iceServers
             }

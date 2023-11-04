@@ -1,4 +1,5 @@
 import {settings} from './localstorage.ts';
+import _ from 'lodash';
 
 export default class ServerSettings {
     private static get _secureChar() {
@@ -14,6 +15,6 @@ export default class ServerSettings {
     }
 
     static get iceServers() {
-        return settings.iceServers;
+        return _.cloneDeep(settings.iceServers);
     }
 }
