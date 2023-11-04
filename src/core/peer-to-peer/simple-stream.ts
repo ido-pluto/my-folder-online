@@ -1,10 +1,10 @@
-import PeerRequest, {CallbackChunk} from './peer-request.ts';
+import PeerDataConnection, {CallbackChunk} from './peer-data-connection.ts';
 import StreamSignals from '../share/remote-download/stream-signals.ts';
 import {StreamCallback, StreamResponse} from '../share/remote-directory.ts';
 import {STREAM_FILE_CHUNK_SIZE} from '../share/virtual-fs/virtual-file.ts';
 
 export default class SimpleStream {
-    public constructor(private _peer: PeerRequest) {
+    public constructor(private _peer: PeerDataConnection) {
 
     }
 

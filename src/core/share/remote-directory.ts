@@ -1,71 +1,34 @@
-import WebSocketRequest from '../peer-to-peer/web-socket-request.ts';
-import SimplePeer from 'simple-peer';
-import {NewPeerResponse} from '../peer-to-peer/peer-manager.ts';
-import PeerRequest from '../peer-to-peer/peer-request.ts';
+import PeerDataConnection from '../peer-to-peer/peer-data-connection.ts';
 import VirtualFs from './virtual-fs/virtual-fs.ts';
 import {LikeFile} from './virtual-fs/virtual-item.ts';
 import StreamSignals from './remote-download/stream-signals.ts';
 import SimpleStream from '../peer-to-peer/simple-stream.ts';
 import {ShareDirectoryMetadata} from './share-directory.ts';
-import ServerSettings from '../app-store/server-settings.ts';
+import Peer from 'peerjs';
 
 export type StreamResponse<T> = T | {error: string};
 export type StreamCallback = (response: Uint8Array, chunk: number, totalChunks: number) => Promise<void> | void
 
 export default class RemoteDirectory {
-    private _serverWS?: WebSocketRequest;
-    private _peer?: PeerRequest;
+    private _dataConnection?: PeerDataConnection;
     private _simpleStream?: SimpleStream;
     private _metadata?: ShareDirectoryMetadata;
     public fs?: VirtualFs;
-    public peerEvents?: SimplePeer.Instance;
+    public peer?: Peer;
 
     public constructor(private _shareId: string) {
     }
 
     public async init() {
-        this._serverWS = new WebSocketRequest();
-        await this._serverWS.connect(ServerSettings.wsServer);
-        await this._connect();
+        const {peer} = await PeerDataConnection.newPeerConnection();
+        this.peer = peer;
+
+        const newDataConnection = peer.connect(this._shareId, {reliable: true});
+        this._dataConnection = new PeerDataConnection(newDataConnection);
+
+        await this._dataConnection.waitOpen();
+        this._simpleStream = new SimpleStream(this._dataConnection);
         await this._fetchFS();
-    }
-
-    private async _connect() {
-        const serverWS = this._serverWS;
-        if (!serverWS) {
-            throw new Error('No ws server connection');
-        }
-
-        // SimplePeer is not es6 module
-        this.peerEvents = new SimplePeer({
-            initiator: false,
-            config: {
-                iceServers: ServerSettings.iceServers
-            }
-        });
-
-        const remoteSignal = await serverWS.request<NewPeerResponse, string>('new-peer', this._shareId);
-
-        if (remoteSignal.error) {
-            throw new Error(remoteSignal.error);
-        }
-
-        this.peerEvents.once('signal', data => {
-            serverWS.request('signal-peer', {
-                shareId: this._shareId,
-                peerId: remoteSignal.peerId,
-                connectInfo: JSON.stringify(data)
-            });
-        });
-
-        this.peerEvents.once('connect', () => {
-            serverWS.close();
-        });
-
-        this.peerEvents.signal(JSON.parse(remoteSignal.connectInfo));
-        this._peer = new PeerRequest(this.peerEvents);
-        await this._peer.connect();
-        this._simpleStream = new SimpleStream(this._peer);
     }
 
     private async _fetchFS() {
@@ -87,7 +50,6 @@ export default class RemoteDirectory {
         await this._simpleStream.streamContent('/file', file.webkitRelativePath, stream, signal);
     }
     close() {
-        this._serverWS?.close();
-        this.peerEvents?.end();
+        this.peer?.destroy();
     }
 }

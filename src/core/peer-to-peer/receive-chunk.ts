@@ -1,4 +1,4 @@
-import {CallbackChunk} from './peer-request.ts';
+import {CallbackChunk} from './peer-data-connection.ts';
 
 /**
  * Make sure that chunks are received in order

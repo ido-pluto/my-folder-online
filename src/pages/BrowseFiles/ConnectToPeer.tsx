@@ -21,8 +21,8 @@ export default function ConnectToPeer ({passwordState}: FileManagerProps){
 
         try {
             await newDirectory.init();
-            if(!newDirectory.peerEvents)
-                throw new Error('Peer event is null');
+            if (!newDirectory.peer)
+                throw new Error('Peer is null');
         } catch (error) {
             toast({
                 title: 'Can not connect to peer',
@@ -35,10 +35,10 @@ export default function ConnectToPeer ({passwordState}: FileManagerProps){
         }
 
         setDirectory(newDirectory);
-        newDirectory.peerEvents.on('error', (error) => {
+        newDirectory.peer.on('error', (error) => {
             toast({
                 title: 'Disconnected from peer',
-                description: (error as Error).message,
+                description: error.message,
                 status: 'error',
                 isClosable: true
             });

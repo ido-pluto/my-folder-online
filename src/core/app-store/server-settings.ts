@@ -1,20 +1,23 @@
 import {settings} from './localstorage.ts';
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
+import {PeerOptions} from 'peerjs';
 
-export default class ServerSettings {
-    private static get _secureChar() {
-        return settings.secure ? 's' : '';
+export function getPeerOptions() {
+    const options: PeerOptions = {};
+
+    if (settings.iceServers.length) {
+        options.config = {
+            iceServers: cloneDeep(settings.iceServers)
+        };
     }
 
-    static get wsServer() {
-        return `ws${this._secureChar}://${settings.webServer}`;
+    if (settings.webServer) {
+        const url = new URL(`https://${settings.webServer}`);
+        options.host = url.hostname;
+        options.port = Number(url.port);
+        options.path = url.pathname;
+        options.secure = settings.secure;
     }
 
-    static get httpServer() {
-        return `http${this._secureChar}://${settings.webServer}`;
-    }
-
-    static get iceServers() {
-        return _.cloneDeep(settings.iceServers);
-    }
+    return options;
 }
