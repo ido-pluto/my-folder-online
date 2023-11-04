@@ -26,7 +26,7 @@ export default function Header() {
         </ChakraLink>
 
         <Box display="flex" gap={5} alignItems="end">
-            <GitHubButton href="https://github.com/my-folder-online/my-folder-online"
+            <GitHubButton href="https://github.com/ido-pluto/my-folder-online"
                           data-icon="octicon-star"
                           data-size="large"
                           data-show-count="true"
