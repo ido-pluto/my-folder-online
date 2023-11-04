@@ -8,7 +8,7 @@ const router = createBrowserRouter([
         element: <HomePage/>,
     },
     {
-        path: '/browse-files/:password?/*',
+        path: '/browse-files/:password/*?',
         element: <BrowseFiles/>,
     },
 ]);
